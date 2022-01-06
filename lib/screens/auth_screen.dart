@@ -10,6 +10,8 @@ enum AuthMode { Signup, Login }
 class AuthScreen extends StatelessWidget {
   static const routeName = '/auth';
 
+  RegExp emailFormat = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
@@ -175,6 +177,7 @@ class _AuthCardState extends State<AuthCard> {
     } catch (error) {
       const errorMessage = 'Autentificarea a aesuat, incercati mai tarziu.';
       _showErrorDialog(errorMessage);
+      print(error);
     }
     setState(() {
       _isLoading = false;
@@ -195,6 +198,7 @@ class _AuthCardState extends State<AuthCard> {
 
   @override
   Widget build(BuildContext context) {
+    RegExp emailFormat = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     final deviceSize = MediaQuery.of(context).size;
     return Card(
       shape: RoundedRectangleBorder(
@@ -216,8 +220,11 @@ class _AuthCardState extends State<AuthCard> {
                   decoration: InputDecoration(labelText: 'E-Mail'),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value.isEmpty || !value.contains('@')) {
-                      return 'Email gresit!';
+                    if (value.isEmpty) {
+                      return 'Introduceti o adresa de email!';
+                    }
+                    if (!emailFormat.hasMatch(value)) {
+                      return 'Introduceti o adresa de email valida';
                     }
                     return null;
                     return null;
@@ -231,8 +238,8 @@ class _AuthCardState extends State<AuthCard> {
                   obscureText: true,
                   controller: _passwordController,
                   validator: (value) {
-                    if (value.isEmpty || value.length < 5) {
-                      return 'Parola introdusa este prea scurta!';
+                    if (value.isEmpty || value.length < 6) {
+                      return 'Parola introdusa este prea scurta! Minim 6.';
                     }
                   },
                   onSaved: (value) {
